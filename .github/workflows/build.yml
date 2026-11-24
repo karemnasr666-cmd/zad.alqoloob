@@ -1,0 +1,39 @@
+name: Build Zad Al Qolob APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'zad_alqolob_1_code/**'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build APK
+        working-directory: zad_alqolob_1_code/android
+        run: |
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zad-Al-Qolob-APK
+          path: zad_alqolob_1_code/android/app/build/outputs/apk/debug/app-debug.apk
